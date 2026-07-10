@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Villa del Rosario - Directorio y Turismo</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-grad-1: #e9ecef;
+            --bg-grad-2: #dee2e6;
+            --shape-1: rgba(13, 110, 253, 0.15);
+            --shape-2: rgba(73, 80, 87, 0.1);
+            --glass-bg: rgba(255, 255, 255, 0.6);
+            --glass-border: rgba(255, 255, 255, 0.8);
+            --glass-input: rgba(255, 255, 255, 0.7);
+            --text-main: #2b2d42;
+            --text-muted: #6c757d;
+            --nav-bg: rgba(255, 255, 255, 0.85);
+            --btn-glass: rgba(13, 110, 253, 0.1);
+            --btn-glass-hover: rgba(13, 110, 253, 0.2);
+            --filter-bg: rgba(255, 255, 255, 0.5);
+            --filter-active: #0d6efd;
+            --filter-text-active: #ffffff;
+            --list-bg: rgba(255, 255, 255, 0.4);
+        }
+
+        body.dark-mode {
+            --bg-grad-1: #121212;
+            --bg-grad-2: #1e1e24;
+            --shape-1: rgba(13, 110, 253, 0.1);
+            --shape-2: rgba(255, 255, 255, 0.05);
+            --glass-bg: rgba(33, 37, 41, 0.6);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --glass-input: rgba(0, 0, 0, 0.4);
+            --text-main: #f8f9fa;
+            --text-muted: #adb5bd;
+            --nav-bg: rgba(18, 18, 18, 0.9);
+            --btn-glass: rgba(56, 189, 248, 0.1);
+            --btn-glass-hover: rgba(56, 189, 248, 0.2);
+            --filter-bg: rgba(33, 37, 41, 0.7);
+            --filter-active: #38bdf8;
+            --filter-text-active: #000000;
+            --list-bg: rgba(0, 0, 0, 0.3);
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            background: linear-gradient(135deg, var(--bg-grad-1) 0%, var(--bg-grad-2) 100%);
+            background-attachment: fixed;
+            font-family: 'Inter', sans-serif;
+            color: var(--text-main);
+            padding-bottom: 90px;
+            transition: background 0.4s ease, color 0.4s ease;
+        }
+
+        .bg-shapes {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1; overflow: hidden;
+        }
+        .shape-1, .shape-2 {
+            position: absolute; border-radius: 50%;
+            filter: blur(100px); transition: background 0.4s ease;
+        }
+        .shape-1 {
+            top: -10%; left: -10%; width: 60vw; height: 60vw; background: var(--shape-1);
+        }
+        .shape-2 {
+            bottom: -10%; right: -10%; width: 70vw; height: 70vw; background: var(--shape-2);
+        }
+
+        .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .app-view {
+            display: none;
+            animation: fadeIn 0.4s ease-in-out;
+        }
+        .app-view.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .hero-section {
+            padding: 2.5rem 2rem; margin: 1.5rem auto;
+            max-width: 1200px; text-align: center;
+        }
+
+        .glass-input {
+            background: var(--glass-input) !important;
+            color: var(--text-main) !important;
+            border: 1px solid var(--glass-border) !important;
+            border-radius: 12px; padding: 0.75rem 1rem;
+        }
+        .glass-input::placeholder { color: var(--text-muted); }
+        .glass-input:focus { box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15); outline: none; }
+
+        .filter-container {
+            display: flex; flex-wrap: wrap; justify-content: center;
+            gap: 0.75rem; padding: 1rem; max-width: 1200px; margin: 0 auto 1.5rem auto;
+        }
+        
+        .filter-btn {
+            background: var(--filter-bg); border: 1px solid var(--glass-border);
+            color: var(--text-main); border-radius: 12px; padding: 0.6rem 1.25rem;
+            font-weight: 500; font-size: 0.9rem; cursor: pointer; transition: all 0.2s ease;
+        }
+        .filter-btn.active {
+            background: var(--filter-active); color: var(--filter-text-active); border-color: transparent;
+        }
+
+        .directory-grid, .popular-grid {
+            max-width: 1200px; margin: 0 auto; padding: 0 1rem;
+        }
+
+        .business-card, .popular-card {
+            padding: 1.5rem; height: 100%; display: flex; flex-direction: column; overflow: hidden;
+        }
+        
+        .popular-image {
+            width: 100%; height: 200px; object-fit: cover; border-radius: 12px;
+            margin-bottom: 1rem; background-color: var(--shape-2);
+        }
+        
+        .map-container {
+            width: 100%; height: 200px; border-radius: 12px; overflow: hidden;
+            margin-top: 1rem; border: 1px solid var(--glass-border);
+        }
+        
+        .map-container iframe { width: 100%; height: 100%; border: 0; }
+
+        .detail-item {
+            display: flex; align-items: flex-start; margin-bottom: 0.6rem;
+            font-size: 0.9rem; color: var(--text-main);
+        }
+        .detail-item i { margin-right: 10px; margin-top: 2px; color: var(--filter-active); font-size: 1rem; }
+
+        .services-list {
+            background: var(--list-bg); border-radius: 12px; padding: 1rem;
+            margin-top: auto; margin-bottom: 1rem; font-size: 0.85rem;
+        }
+        .services-list ul { padding-left: 1.2rem; margin-bottom: 0; }
+
+        .btn-glass {
+            background: var(--btn-glass); border: 1px solid var(--glass-border);
+            color: var(--filter-active); font-weight: 600; border-radius: 12px;
+            width: 100%; padding: 0.75rem; text-align: center; text-decoration: none; display: block;
+        }
+
+        .bottom-nav {
+            position: fixed; bottom: 0; left: 0; width: 100%; height: 70px;
+            background: var(--nav-bg); backdrop-filter: blur(25px); border-top: 1px solid var(--glass-border);
+            display: flex; justify-content: space-around; align-items: center; z-index: 1000;
+        }
+        .nav-item {
+            text-align: center; color: var(--text-muted); text-decoration: none;
+            font-size: 0.75rem; font-weight: 500; display: flex; flex-direction: column;
+            align-items: center; gap: 4px; cursor: pointer; transition: color 0.2s;
+        }
+        .nav-item.active { color: var(--filter-active); }
+        .nav-item i { font-size: 1.3rem; }
+    </style>
+</head>
+<body>
+
+<div class="bg-shapes">
+    <div class="shape-1"></div>
+    <div class="shape-2"></div>
+</div>
+
+<div class="container-fluid p-0">
+    
+    <div id="view-directory" class="app-view active">
+        <div class="glass-panel hero-section mx-3 mx-lg-auto mt-4">
+            <h1 class="fw-bold mb-3" style="letter-spacing: -0.5px;">Villa del Rosario</h1>
+            <p class="mb-4 text-muted" style="max-width: 800px; margin: 0 auto; line-height: 1.6;">
+                Encuentra rápidamente empresas, servicios logísticos, infraestructura comercial y profesionales de la capital ganadera del municipio Rosario de Perijá.
+            </p>
+            <div class="mx-auto" style="max-width: 600px;">
+                <div class="input-group">
+                    <span class="input-group-text glass-input border-end-0 bg-transparent text-muted"><i class="bi bi-search"></i></span>
+                    <input type="text" id="searchInput" class="form-control glass-input border-start-0" placeholder="Buscar empresas o servicios...">
+                </div>
+            </div>
+        </div>
+
+        <div class="filter-container" id="filter-container"></div>
+        <div class="directory-grid row g-4 mb-5" id="directory-container"></div>
+    </div>
+
+    <div id="view-popular" class="app-view">
+        <div class="glass-panel hero-section mx-3 mx-lg-auto mt-4">
+            <h1 class="fw-bold mb-3">Lo más popular</h1>
+            <p class="text-muted mb-0">Sitios históricos, plazas y puntos estratégicos de referencia en nuestra ciudad.</p>
+        </div>
+
+        <div class="popular-grid row g-4 mb-5" id="popular-container"></div>
+    </div>
+
+</div>
+
+<div class="bottom-nav">
+    <a onclick="switchView('directory')" class="nav-item active" id="nav-directory">
+        <i class="bi bi-grid-1x2-fill"></i>
+        <span>Directorio</span>
+    </a>
+    <a onclick="switchView('popular')" class="nav-item" id="nav-popular">
+        <i class="bi bi-geo-alt-fill"></i>
+        <span>Sitios</span>
+    </a>
+    <a onclick="focusSearch()" class="nav-item" id="nav-search">
+        <i class="bi bi-search"></i>
+        <span>Buscar</span>
+    </a>
+    <a onclick="toggleTheme()" class="nav-item" id="nav-theme">
+        <i class="bi bi-moon-fill" id="theme-icon"></i>
+        <span>Tema</span>
+    </a>
+</div>
+
+<script>
+    const directoryData = [
+        { id: 1, name: "Servicios de Seguridad y CCTV", category: "Tecnología", icon: "bi-camera-video", location: "Centro Comercial, Local 12", hours: "8:00 AM - 5:00 PM", phone: "+58 414-1234567", products: ["Instalación de cámaras Hikvision", "Configuración de DVR", "Control de accesos"], actionText: "Contactar" },
+        { id: 2, name: "Santorini Yogurt Gelato Cafe", category: "Comida", icon: "bi-cup-straw", location: "Calle 72 con 13, Tierra Negra", hours: "Abierto todos los días", phone: "+58 414-6871095", products: ["Yogurt de Merey", "Helados sin azúcar ni lactosa", "Gelato+soft"], actionText: "Pedir Delivery" },
+        { id: 3, name: "Centro Médico Villa Salud", category: "Salud", icon: "bi-hospital", location: "C.C. Costa Azul, Av. Municipal", hours: "Previa Cita (9:00 AM)", phone: "+58 412-7808616", products: ["Dermatología y Oncología de Piel", "Cardiología Pediátrica", "Oftalmología", "Ecografías"], actionText: "Agendar Cita" },
+        { id: 4, name: "Centro Clínico La Popular", category: "Salud", icon: "bi-activity", location: "Sector Jalisco, al lado de Farmacia La Popular", hours: "Atención Especializada", phone: "+58 424-3292110", products: ["Análisis de laboratorio", "Ecografías 3D/4D", "Perfil biofísico fetal"], actionText: "Agendar Cita" },
+        { id: 5, name: "Centro Médico Nazareth", category: "Salud", icon: "bi-heart-pulse", location: "Calle Occidente entre Falcón y Concepción", hours: "Atención 24/7", phone: "+58 412-0640040", products: ["Emergencias 24/7", "Rayos X y Ecografías", "Sala de Quimioterapias", "Laboratorio Clínico"], actionText: "Contactar Clínica" },
+        { id: 6, name: "Laboratorio Biosalud", category: "Salud", icon: "bi-droplet", location: "C.C. Plaza Mall, Local #3", hours: "7:00 AM - 6:00 PM", phone: "+58 412-7891837", products: ["Hematología completa", "Pruebas hormonales", "Ecografías pélvicas y renales"], actionText: "Consultar Precios" },
+        { id: 7, name: "QuiropediaCare", category: "Salud y Belleza", icon: "bi-bandaid", location: "Clínica Santa María, Casco Central", hours: "8:00 AM - 4:00 PM", phone: "+58 424-6510861", products: ["Tratamiento de uñas encarnadas", "Cuidado de hongos y verrugas", "Limpieza de callosidades"], actionText: "Agendar Sesión" },
+        { id: 8, name: "Frutería Hermanos Contreras", category: "Comercio", icon: "bi-basket2", location: "Al lado del antiguo BOD", hours: "Desde las 5:30 AM", phone: "+58 414-3792977", products: ["Frutas y hortalizas frescas", "Huevos y frutos secos", "Pulpas de frutas congeladas"], actionText: "Solicitar Delivery" },
+        { id: 9, name: "Pizzas Dionardo García", category: "Comida", icon: "bi-pie-chart", location: "Av. Adolfo López", hours: "Fines de semana", phone: "+58 422-0040652", products: ["Pizzas familiares", "Contornos adicionales", "Servicio a domicilio gratuito"], actionText: "Pedir Pizza" },
+        { id: 10, name: "Tumbarranchos de Elio Carrillo", category: "Comida", icon: "bi-egg-fried", location: "La Esquina de los Tumbarranchis", hours: "Desde las 6:00 PM", phone: "+58 412-7877769", products: ["Tumbarranchos de carne mechada", "Tumbarranchos de mortadela y queso", "Cena tradicional zuliana"], actionText: "Hacer Pedido" },
+        { id: 11, name: "Empanadas Rico (Villa Flash)", category: "Comida", icon: "bi-basket", location: "La Villa del Rosario", hours: "Solo por encargo", phone: "+58 412-0000000", products: ["Combos de mini empanadas", "Tequeños por encargo", "Pasapalos para eventos"], actionText: "Contactar" },
+        { id: 12, name: "Asesoría Inmobiliaria", category: "Servicios Profesionales", icon: "bi-house-check", location: "Todo el municipio", hours: "Horario de Oficina", phone: "+58 412-1000964", products: ["Venta de casas y terrenos", "Alquiler de locales comerciales", "Asesoría de compra y venta"], actionText: "Contactar Asesor" },
+        { id: 13, name: "Asesoría Económica Melvin Molero", category: "Servicios Profesionales", icon: "bi-graph-up-arrow", location: "Presencial y Virtual", hours: "Horario de Oficina", phone: "+58 412-7345389", products: ["Organización de proyectos", "Asesoría para emprendedores", "Clases de Excel"], actionText: "Solicitar Asesoría" },
+        { id: 14, name: "Transporte y Encomiendas Maracaibo", category: "Logística", icon: "bi-truck", location: "La Villa / Maracaibo", hours: "Salidas programadas", phone: "+58 424-0000000", products: ["Viajes ida y vuelta", "Entrega de encomiendas", "Servicio de compras por encargo"], actionText: "Apartar Cupo" },
+        { id: 15, name: "World Cell Services", category: "Tecnología", icon: "bi-phone", location: "Villa del Rosario", hours: "8:00 AM - 6:00 PM", phone: "+58 414-0000000", products: ["Ventiladores recargables solares", "Powerbanks de 20000mah", "Accesorios y cables"], actionText: "Ver Inventario" },
+        { id: 16, name: "Multitiendas Arxy", category: "Tiendas", icon: "bi-shop", location: "La Villa", hours: "8:00 AM - 5:00 PM", phone: "+58 414-0000000", products: ["Ropa importada (todas las tallas)", "Artículos escolares", "Puertas plegables"], actionText: "Visitar Tienda" },
+        { id: 17, name: "Club UGAVI", category: "Entretenimiento", icon: "bi-controller", location: "Parque Ferial UGAVI", hours: "Fines de Semana", phone: "+58 414-0000000", products: ["Tasca y restaurante", "Áreas de piscina", "Transmisión de eventos deportivos"], actionText: "Visitar Instalaciones" },
+        { id: 18, name: "Entérate Noticias", category: "Medios de Comunicación", icon: "bi-broadcast", location: "Ganadera 88.1FM", hours: "Programación matutina", phone: "+58 414-6655764", products: ["Noticias regionales", "Análisis de política y economía", "Publicidad comercial"], actionText: "Sintonizar" },
+        { id: 19, name: "Lorexy Estética Integral", category: "Salud y Belleza", icon: "bi-stars", location: "Servicio a Domicilio", hours: "A partir de las 2:00 PM", phone: "+58 412-9301484", products: ["Epilación con cera", "Cejas y pestañas", "Depilación para damas y caballeros"], actionText: "Agendar Turno" },
+        { id: 20, name: "Servicio Técnico Juan Paz", category: "Servicios Técnicos", icon: "bi-tools", location: "Villa del Rosario", hours: "8:00 AM - 5:00 PM", phone: "Solicitar al directo", products: ["Reparación de Smart TV", "Reparación de Airfryers", "Instalación de tiras LED"], actionText: "Consultar" }
+    ];
+
+    const popularData = [
+        {
+            id: 1,
+            name: "Plaza Bolívar",
+            type: "Punto de Encuentro",
+            description: "El corazón del casco central de Villa del Rosario. Un espacio rodeado de comercio local, zonas de descanso y el principal punto de referencia estratégico para ubicarse en la ciudad.",
+            imageUrl: "https://images.unsplash.com/photo-1596422846543-75c6fc197f0a?auto=format&fit=crop&w=800&q=80",
+            mapQuery: "Plaza Bolivar, Villa del Rosario, Zulia"
+        },
+        {
+            id: 2,
+            name: "Iglesia Nuestra Señora del Rosario",
+            type: "Sitio Histórico",
+            description: "Templo histórico y epicentro de la fe en el municipio. Altamente fotografiado durante las fiestas patronales, destaca por su arquitectura tradicional y significado cultural.",
+            imageUrl: "https://images.unsplash.com/photo-1548625361-ecac3f8484e5?auto=format&fit=crop&w=800&q=80",
+            mapQuery: "Iglesia Nuestra Señora del Rosario, Villa del Rosario, Zulia"
+        },
+        {
+            id: 3,
+            name: "Parque Ferial (UGAVI)",
+            type: "Centro de Eventos",
+            description: "Sede de la Unión de Ganaderos. Es el recinto donde se desarrollan las importantes ferias agropecuarias, exposiciones y eventos multitudinarios reconocidos en todo el estado Zulia.",
+            imageUrl: "https://images.unsplash.com/photo-1500595046743-cd271d694d30?auto=format&fit=crop&w=800&q=80",
+            mapQuery: "Ugavi, Villa del Rosario, Zulia"
+        }
+    ];
+
+    const categories = ["Todas", ...new Set(directoryData.map(item => item.category))];
+    let currentFilter = "Todas";
+    let searchQuery = "";
+
+    const renderFilters = () => {
+        document.getElementById("filter-container").innerHTML = categories.map(cat => `
+            <button class="filter-btn ${cat === currentFilter ? 'active' : ''}" onclick="filterByCategory('${cat}')">${cat}</button>
+        `).join("");
+    };
+
+    const renderDirectory = () => {
+        const container = document.getElementById("directory-container");
+        const filtered = directoryData.filter(item => {
+            const matchCat = currentFilter === "Todas" || item.category === currentFilter;
+            const matchSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                                item.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                                item.products.some(p => p.toLowerCase().includes(searchQuery.toLowerCase()));
+            return matchCat && matchSearch;
+        });
+
+        if (filtered.length === 0) {
+            container.innerHTML = `<div class="glass-panel p-5 text-center w-100"><p class="mb-0 text-muted">No se encontraron resultados para tu búsqueda.</p></div>`;
+            return;
+        }
+
+        container.innerHTML = filtered.map(item => {
+            const cleanPhone = item.phone.replace(/[\s-+]/g, "");
+            const isIG = item.phone.includes("IG:");
+            const contactLink = isIG ? `https://instagram.com/${item.phone.replace("IG: @", "")}` : `https://wa.me/${cleanPhone}`;
+            const linkIcon = isIG ? "bi-instagram" : "bi-whatsapp";
+
+            return `
+            <div class="col-12 col-md-6 col-lg-4">
+                <div class="glass-panel business-card">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="fw-bold mb-0">${item.name}</h5>
+                        <span class="badge bg-primary bg-opacity-75 text-white border-0"><i class="bi ${item.icon} me-1"></i>${item.category}</span>
+                    </div>
+                    
+                    <div class="detail-item">
+                        <i class="bi bi-geo-alt-fill"></i>
+                        <span>${item.location}</span>
+                    </div>
+                    
+                    <div class="detail-item">
+                        <i class="bi bi-clock-fill"></i>
+                        <span>${item.hours}</span>
+                    </div>
+                    
+                    <div class="detail-item">
+                        <i class="bi bi-telephone-fill"></i>
+                        <a href="${contactLink}" target="_blank" class="text-decoration-none" style="color: var(--text-main);">
+                            ${item.phone} <i class="bi ${linkIcon} text-success ms-1"></i>
+                        </a>
+                    </div>
+
+                    <div class="services-list mt-auto">
+                        <div class="fw-bold mb-1 small">Servicios / Productos:</div>
+                        <ul>
+                            ${item.products.map(p => `<li>${p}</li>`).join('')}
+                        </ul>
+                    </div>
+
+                    <a href="${contactLink}" target="_blank" class="btn btn-glass d-block text-center text-decoration-none mt-3">
+                        ${item.actionText}
+                    </a>
+                </div>
+            </div>
+        `}).join("");
+    };
+
+    const renderPopular = () => {
+        const container = document.getElementById("popular-container");
+        container.innerHTML = popularData.map(site => `
+            <div class="col-12 col-lg-6">
+                <div class="glass-panel popular-card">
+                    <img src="${site.imageUrl}" alt="${site.name}" class="popular-image" loading="lazy">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h4 class="fw-bold mb-0">${site.name}</h4>
+                        <span class="badge bg-primary bg-opacity-10 text-primary border border-primary-subtle">${site.type}</span>
+                    </div>
+                    <p class="text-muted mb-3" style="font-size: 0.95rem;">${site.description}</p>
+                    
+                    <div class="fw-bold small mb-2 text-uppercase" style="letter-spacing: 0.5px; color: var(--filter-active);">
+                        <i class="bi bi-geo-alt-fill me-1"></i> Ubicación en tiempo real
+                    </div>
+                    
+                    <div class="map-container">
+                        <iframe 
+                            src="https://maps.google.com/maps?q=${encodeURIComponent(site.mapQuery)}&t=&z=15&ie=UTF8&iwloc=&output=embed" 
+                            allowfullscreen>
+                        </iframe>
+                    </div>
+                </div>
+            </div>
+        `).join("");
+    };
+
+    window.switchView = (viewName) => {
+        document.querySelectorAll('.app-view').forEach(el => el.classList.remove('active'));
+        document.getElementById(`view-${viewName}`).classList.add('active');
+        
+        document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+        document.getElementById(`nav-${viewName}`).classList.add('active');
+        
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    window.filterByCategory = (category) => {
+        currentFilter = category;
+        renderFilters();
+        renderDirectory();
+    };
+
+    document.getElementById("searchInput").addEventListener("input", (e) => {
+        searchQuery = e.target.value;
+        renderDirectory();
+    });
+
+    window.focusSearch = () => {
+        switchView('directory');
+        document.getElementById("searchInput").focus();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    window.toggleTheme = () => {
+        document.body.classList.toggle("dark-mode");
+        const icon = document.getElementById("theme-icon");
+        if (document.body.classList.contains("dark-mode")) {
+            icon.classList.remove("bi-moon-fill");
+            icon.classList.add("bi-sun-fill");
+        } else {
+            icon.classList.remove("bi-sun-fill");
+            icon.classList.add("bi-moon-fill");
+        }
+    };
+
+    document.addEventListener("DOMContentLoaded", () => {
+        renderFilters();
+        renderDirectory();
+        renderPopular();
+    });
+</script>
+</body>
+</html>
